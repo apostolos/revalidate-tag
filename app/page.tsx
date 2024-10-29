@@ -23,7 +23,8 @@ async function Comp() {
   "use cache";
   cacheTag("mytag");
   const data = await fetch(
-    "https://next-data-api-endpoint.vercel.app/api/random"
+    "https://next-data-api-endpoint.vercel.app/api/random",
+    { cache: "no-store" }
   );
   const result = await data.text();
   return <p>{result}</p>;
