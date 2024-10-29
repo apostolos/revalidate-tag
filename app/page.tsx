@@ -1,9 +1,22 @@
 import { Suspense } from "react";
-import { unstable_cacheTag as cacheTag, revalidateTag } from "next/cache";
+import {
+  unstable_cacheTag as cacheTag,
+  revalidateTag,
+  revalidatePath,
+} from "next/cache";
 
-async function revalidate() {
-  "use server";
-  revalidateTag("mytag");
+export default function Home() {
+  return (
+    <>
+      <Suspense fallback={<p>Loading...</p>}>
+        <Comp />
+      </Suspense>
+      <form action={revalidate_tag}>
+        <button>Revalidate Tag</button>{" "}
+        <button formAction={revalidate_path}>Revalidate Path</button>
+      </form>
+    </>
+  );
 }
 
 async function Comp() {
@@ -13,20 +26,15 @@ async function Comp() {
     "https://next-data-api-endpoint.vercel.app/api/random"
   );
   const result = await data.text();
-  return <span>{result}</span>;
+  return <p>{result}</p>;
 }
 
-export default function Home() {
-  return (
-    <>
-      <Suspense fallback={<p>Loading...</p>}>
-        <p>
-          Not Revalidating: <Comp />
-        </p>
-      </Suspense>
-      <form action={revalidate}>
-        <button>Revalidate</button>
-      </form>
-    </>
-  );
+async function revalidate_tag() {
+  "use server";
+  revalidateTag("mytag");
+}
+
+async function revalidate_path() {
+  "use server";
+  revalidatePath("/", "page");
 }
