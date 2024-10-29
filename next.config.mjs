@@ -7,6 +7,11 @@ const nextConfig = {
     // ppr: true,
     dynamicIO: true,
   },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 };
 
 export default nextConfig;
