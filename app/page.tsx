@@ -1,7 +1,5 @@
-import { unstable_cacheTag as cacheTag } from 'next/cache';
 import { Suspense } from 'react';
-import Form from './Form';
-import invalidate from './action';
+import { unstable_cacheTag as cacheTag, revalidateTag } from 'next/cache';
 
 export default function Home() {
   return (
@@ -14,19 +12,23 @@ export default function Home() {
           Revalidating: <CompB />
         </p>
       </Suspense>
-      <Form action={invalidate} />
+      <form action={invalidate}>
+        <button>Revalidate</button>
+      </form>
     </>
   );
+}
+
+async function invalidate() {
+  'use server';
+  revalidateTag('mytag');
 }
 
 async function CompA() {
   'use cache';
   cacheTag('mytag');
-  console.log('fetching');
   const data = await fetch('https://next-data-api-endpoint.vercel.app/api/random');
-  console.log('got response');
   const result = await data.text();
-  console.log(result);
   return <span>{result}</span>;
 }
 
@@ -38,8 +40,6 @@ async function CompB() {
       'x-bust': Math.random().toString(),
     },
   });
-
   const result = await data.text();
-
   return <span>{result}</span>;
 }
